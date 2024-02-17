@@ -22,7 +22,7 @@ class BoardsController < ApplicationController
   end
 
   def final_state
-    @game.final_state(params[:attemps].to_i)
+    @game.final_state(params[:attempts].to_i)
     render json: @game.board.cells, status: :ok
   end
 

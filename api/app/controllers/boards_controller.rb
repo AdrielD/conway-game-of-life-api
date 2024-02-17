@@ -1,9 +1,14 @@
 class BoardsController < ApplicationController
-  before_action :load_game, only: [:next_state, :state, :final_state]
+  before_action :load_game, only: [:next_state, :state, :final_state, :reset]
 
   def create
     game = Game.new.start(params[:cells])
-    render json: { id: game.board.id }, status: :created
+    render json: game.board, status: :created
+  end
+
+  def show
+    board = Board.find(params[:id].to_i)
+    render json: board.cells, status: :ok
   end
 
   def next_state
@@ -12,22 +17,23 @@ class BoardsController < ApplicationController
   end
 
   def state
-    @game.state(params[:n])
+    @game.state(params[:n].to_i)
     render json: @game.board.cells, status: :ok
   end
 
   def final_state
-    @game.final_state(params[:attemps])
+    @game.final_state(params[:attemps].to_i)
+    render json: @game.board.cells, status: :ok
+  end
+
+  def reset
+    @game.reset
     render json: @game.board.cells, status: :ok
   end
 
   private
 
   def load_game
-    @game = Game.new.load(params[:id])
-  end
-
-  def board_params
-    params.permit!(:id, :cells, :n, :attempt)
+    @game = Game.new.load(params[:id].to_i)
   end
 end

@@ -16,6 +16,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_17_175642) do
 
   create_table "boards", force: :cascade do |t|
     t.integer "cells", default: [[0, 0], [0, 0]], array: true
+    t.integer "original_seed", default: [[0, 0], [0, 0]], array: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

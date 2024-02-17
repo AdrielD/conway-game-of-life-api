@@ -8,7 +8,7 @@ class Game
   end
 
   def load(id)
-    @board = Board.find(id.to_i)
+    @board = Board.find(id)
     self
   end
 
@@ -18,16 +18,24 @@ class Game
   end
 
   def state(n = 1)
-
+    new_state = @board.cells
+    for i in 1..n do
+      new_state = iterate(new_state)
+    end
+    @board.update(cells: new_state)
   end
 
   def final_state(attemps = 10)
 
   end
 
+  def reset
+    @board.update(cells: @board.original_seed)
+  end
+
   private
 
-  def iterate
+  def iterate(grid)
     new_grid = []
     grid.each_with_index do |row, y|
       new_row = []

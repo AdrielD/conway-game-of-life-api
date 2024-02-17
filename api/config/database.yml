@@ -1,0 +1,20 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: 5
+  host: localhost
+  port: 5432
+  username: gameapi
+  password: gameapi123
+
+development:
+  <<: *default
+  database: game_api_development
+
+test:
+  <<: *default
+  database: game_api_test
+
+production:
+  <<: *default
+  database: game_api_production

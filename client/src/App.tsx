@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import useBoardApi from './useBoardApi.ts';
-// import axios from "axios";
 
 const Row = ({ children }: { children: any; }) =>
   <div className="row">{children}</div>;
@@ -11,6 +10,8 @@ const Cell = ({ value }: { value: number; }) =>
 
 interface SidebarInterface {
   id: number;
+  createBoard: (grid: number[][]) => void;
+  fetchBoard: (id: number) => void;
   resetBoard: (id: number) => void;
   nextState: (id: number) => void;
   getState: (id: number, n: number) => void;
@@ -19,6 +20,8 @@ interface SidebarInterface {
 
 const Sidebar = ({
   id,
+  createBoard,
+  fetchBoard,
   resetBoard,
   nextState,
   getState,
@@ -26,26 +29,57 @@ const Sidebar = ({
 }: SidebarInterface) => {
   const [n, setN] = useState<any>(1);
   const [attempts, setAttempts] = useState<any>(10);
+  const [fetchId, setFetchId] = useState<any>(1);
+  const [sequence, setSequence] = useState<any>(0);
+
+  const buildGrid = () => {
+    let seq = sequence;
+    const size = Math.ceil(Math.sqrt(seq.length));
+    while (seq.length < size * size) {
+      seq += '0';
+    }
+    seq = seq.split('');
+    const grid = [];
+    while (grid.length < size) {
+      grid.push(seq.splice(0, size));
+    }
+    return grid;
+  }
 
   return (
     <div className="sidebar">
-      <p>Game ID: {id}</p>
-      <input type="button" onClick={() => resetBoard(id)} value="Reset Board" />
-      <br />
-      <input type="button" onClick={() => nextState(id)} value="Next State" />
-      <br />
-      <input type="text" value={n} onChange={e => setN(e.target.value)} />
-      <input type="button" onClick={() => getState(id, n)} value="Get State" />
-      <br />
-      <input type="text" value={attempts} onChange={e => setAttempts(e.target.value)} />
-      <input type="button" onClick={() => finalState(id, attempts)} value="Final State" />
+      <div className="field">
+        Sequence: <input type="text" value={sequence} onChange={e => setSequence(e.target.value)} />
+        <br />
+        <input type="button" onClick={() => createBoard(buildGrid())} value="Create Board" />
+      </div>
+      <div className="field">
+        ID: <input type="text" value={fetchId} onChange={e => setFetchId(e.target.value)} />
+        <br />
+        <input type="button" onClick={() => fetchBoard(fetchId)} value="Get Board" />
+      </div>
+      <div className="field">
+        <input type="button" onClick={() => resetBoard(id)} value="Reset Board" />
+      </div>
+      <div className="field">
+        <input type="button" onClick={() => nextState(id)} value="Next State" />
+      </div>
+      <div className="field">
+        N: <input type="text" value={n} onChange={e => setN(e.target.value)} />
+        <br />
+        <input type="button" onClick={() => getState(id, n)} value="Get State" />
+      </div>
+      <div className="field">
+        Attempts: <input type="text" value={attempts} onChange={e => setAttempts(e.target.value)} />
+        <br />
+        <input type="button" onClick={() => finalState(id, attempts)} value="Final State" />
+      </div>
     </div>
   )
 }
 
 const App = () => {
-  const [grid, api] = useBoardApi();
-  const id = 1;
+  const [id, grid, api] = useBoardApi();
 
   useEffect(() => {
     api.fetchBoard(1);
@@ -55,6 +89,8 @@ const App = () => {
     <div className="game">
       <Sidebar
         id={id}
+        createBoard={api.createBoard}
+        fetchBoard={api.fetchBoard}
         resetBoard={api.resetBoard}
         nextState={api.nextState}
         getState={api.getState}

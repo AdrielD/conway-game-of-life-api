@@ -3,11 +3,19 @@ import axios from "axios";
 
 const useBoardApi = () => {
   const [grid, setGrid] = useState([[], []]);
+  const [id, setId] = useState(1);
   const headers = { headers: { 'Content-Type': 'application/json' } };
+
+  const createBoard = async (grid: number[][]) => {
+    const response = await axios.post(`/api/board/`, { cells: grid }, headers);
+    setGrid(response.data.cells);
+    setId(response.data.id);
+  }
 
   const fetchBoard = async (id: number) => {
     const response = await axios.get(`/api/board/${id}`, headers);
     setGrid(response.data);
+    setId(id);
   }
 
   const resetBoard = async (id: number) => {
@@ -31,8 +39,10 @@ const useBoardApi = () => {
   }
 
   return [
+    id,
     grid,
     {
+      createBoard,
       fetchBoard,
       resetBoard,
       nextState,

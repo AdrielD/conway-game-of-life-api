@@ -1,4 +1,4 @@
-class BoardsController < ApplicationController
+class Api::BoardsController < ApplicationController
   before_action :load_game, only: [:next_state, :state, :final_state, :reset]
 
   def create
